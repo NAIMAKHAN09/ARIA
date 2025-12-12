@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FinalResponse } from '../types';
-import { Copy, Check, RotateCcw } from 'lucide-react';
+import { Copy, Check, RotateCcw, Volume2, Loader2, StopCircle } from 'lucide-react';
+import { generateSpeech } from '../services/geminiService';
 
 interface ResultDisplayProps {
   data: FinalResponse | null;
@@ -8,7 +9,23 @@ interface ResultDisplayProps {
 }
 
 export const ResultDisplay: React.FC<ResultDisplayProps> = ({ data, onReset }) => {
-  const [copied, setCopied] = React.useState(false);
+  const [copied, setCopied] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoadingAudio, setIsLoadingAudio] = useState(false);
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  const [audioSource, setAudioSource] = useState<AudioBufferSourceNode | null>(null);
+
+  useEffect(() => {
+    return () => {
+      // Cleanup audio on unmount
+      if (audioSource) {
+        audioSource.stop();
+      }
+      if (audioContext) {
+        audioContext.close();
+      }
+    };
+  }, [audioSource, audioContext]);
 
   if (!data) return null;
 
@@ -16,6 +33,43 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ data, onReset }) =
     navigator.clipboard.writeText(data.result);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handlePlayTTS = async () => {
+    if (isPlaying) {
+      audioSource?.stop();
+      setIsPlaying(false);
+      return;
+    }
+
+    try {
+      setIsLoadingAudio(true);
+      const base64Audio = await generateSpeech(data.result);
+      
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      setAudioContext(ctx);
+
+      const binaryString = atob(base64Audio);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+
+      const audioBuffer = await ctx.decodeAudioData(bytes.buffer);
+      const source = ctx.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(ctx.destination);
+      source.onended = () => setIsPlaying(false);
+      
+      source.start(0);
+      setAudioSource(source);
+      setIsPlaying(true);
+    } catch (err) {
+      console.error("TTS playback failed", err);
+    } finally {
+      setIsLoadingAudio(false);
+    }
   };
 
   return (
@@ -28,9 +82,21 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ data, onReset }) =
           <div className="bg-slate-800/80 px-6 py-4 border-b border-slate-700 flex items-center justify-between backdrop-blur">
             <div className="flex items-center gap-3">
               <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></div>
-              <h3 className="font-semibold text-slate-100">Ready-to-Use Prompt</h3>
+              <h3 className="font-semibold text-slate-100">Optimized Prompt</h3>
             </div>
             <div className="flex gap-2">
+              <button
+                onClick={handlePlayTTS}
+                disabled={isLoadingAudio}
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors border ${
+                  isPlaying 
+                    ? 'bg-red-500/10 text-red-400 border-red-500/30 hover:bg-red-500/20' 
+                    : 'bg-slate-700 hover:bg-slate-600 text-slate-300 border-slate-600'
+                }`}
+              >
+                 {isLoadingAudio ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : isPlaying ? <StopCircle className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                 {isPlaying ? 'Stop' : 'Read Aloud'}
+              </button>
               <button
                 onClick={handleCopy}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition-colors border border-slate-600"
@@ -63,7 +129,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ data, onReset }) =
       </div>
 
       <div className="text-center mt-8 text-slate-500 text-sm">
-        Copy this prompt and paste it into your favorite AI model.
+        A.R.I.A has generated your optimized prompt ready for use.
       </div>
     </div>
   );

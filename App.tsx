@@ -62,10 +62,10 @@ const App: React.FC = () => {
         {appState === 'IDLE' && (
           <div className="text-center mb-10 mt-8 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <h2 className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-slate-400 pb-2">
-              AI Prompt Editor
+              Perfect Your Prompts
             </h2>
             <p className="text-slate-400 max-w-2xl mx-auto text-lg leading-relaxed">
-              Don't struggle with phrasing. A.R.I.A converts your vague ideas into professional, ready-to-use prompts with smart placeholders.
+              Vague inputs lead to generic results. A.R.I.A transforms your rough ideas into professional, high-performance prompts for any AI model.
             </p>
           </div>
         )}
