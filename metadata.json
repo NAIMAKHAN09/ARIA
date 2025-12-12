@@ -1,5 +1,5 @@
 {
-  "name": "Copy of A.R.I.A - AI Prompt Refiner",
-  "description": "A smart agent that transforms vague ideas into high-quality, engineered prompts for LLMs.",
+  "name": "A.R.I.A - Prompt Editor",
+  "description": "An automated prompt engineering tool that converts vague ideas into professional LLM prompts using placeholders.",
   "requestFramePermissions": []
 }

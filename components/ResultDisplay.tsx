@@ -28,7 +28,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ data, onReset }) =
           <div className="bg-slate-800/80 px-6 py-4 border-b border-slate-700 flex items-center justify-between backdrop-blur">
             <div className="flex items-center gap-3">
               <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></div>
-              <h3 className="font-semibold text-slate-100">Optimized Prompt</h3>
+              <h3 className="font-semibold text-slate-100">Ready-to-Use Prompt</h3>
             </div>
             <div className="flex gap-2">
               <button
@@ -63,7 +63,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ data, onReset }) =
       </div>
 
       <div className="text-center mt-8 text-slate-500 text-sm">
-        A.R.I.A has generated your optimized prompt ready for use.
+        Copy this prompt and paste it into your favorite AI model.
       </div>
     </div>
   );

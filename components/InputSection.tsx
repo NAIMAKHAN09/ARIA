@@ -35,7 +35,7 @@ export const InputSection: React.FC<InputSectionProps> = ({ onAnalyze, appState 
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={handleKeyDown}
             disabled={isDisabled}
-            placeholder="Enter a vague idea (e.g., 'Make this email better', 'Fix my python script')..."
+            placeholder="Describe what you want to prompt an AI to do (e.g., 'Check my code', 'Write a marketing email')..."
             className="w-full bg-transparent text-slate-200 placeholder-slate-500 p-6 min-h-[120px] outline-none resize-none font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed"
           />
           <div className="bg-slate-800/50 px-4 py-3 flex justify-between items-center border-t border-slate-700/50">

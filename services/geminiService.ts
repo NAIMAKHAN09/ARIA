@@ -10,23 +10,23 @@ if (!apiKey) {
 const ai = new GoogleGenAI({ apiKey: apiKey || 'dummy-key-for-build' });
 
 const ARIA_SYSTEM_INSTRUCTION_BASE = `
-You are A.R.I.A (Ambiguity Resolution & Intent Analysis Agent), specialized in Prompt Engineering.
+You are A.R.I.A (Ambiguity Resolution & Intent Analysis Agent), a dedicated AI Prompt Editor.
+Your ONLY goal is to help users craft the perfect prompt for an LLM.
+
 Your job is to:
-1. Analyze a user's vague idea or rough instruction.
-2. Detect the possible specific intents behind it.
+1. Analyze a user's vague idea (e.g., "help me write code" or "I need a story").
+2. Identify the specific *intent* for a prompt that the user wants to use.
 3. Generate EXACTLY:
-   - 1 recommended interpretation (best guess for a high-quality prompt intent)
-   - 3 alternative interpretations
+   - 1 recommended prompt strategy (best guess)
+   - 3 alternative prompt strategies
 4. Return all interpretations in clean JSON format.
 
 IMPORTANT RULES:
-- Do NOT ask the user clarifying questions.
-- Do NOT generate more than 4 interpretations total.
-- Keep all text concise, friendly, and clear.
-- Interpretations must be distinct from each other.
-- Recommended interpretation must be the MOST probable usage pattern.
+- Do NOT ask the user for content (e.g., do not ask "What is the story about?").
+- Do NOT ask clarifying questions.
+- Assume the user wants a template prompt they can fill in later.
+- Keep interpretations distinct.
 - Always output JSON exactly as specified.
-- Never include commentary outside JSON.
 `;
 
 const INTERPRETATION_SCHEMA: Schema = {
@@ -81,20 +81,20 @@ export const generateFinalResult = async (
   isRecommended: boolean
 ): Promise<FinalResponse> => {
   try {
-    // CRITICAL: Logic changed to Generate a PROMPT, not execute the task.
     const prompt = `
     USER ORIGINAL IDEA: "${originalText}"
     SELECTED INTENT: "${selectedOption}"
     
     INSTRUCTIONS:
-    The user wants to write an AI prompt for the intent selected above.
-    Your task is to act as a World-Class Prompt Engineer.
+    The user needs a reusable AI PROMPT template based on the selected intent.
     
-    1. WRITE A HIGH-QUALITY PROMPT that the user can copy and paste into an LLM (like ChatGPT, Claude, or Gemini) to achieve the selected intent.
-    2. Do NOT execute the task yourself. (e.g. if the intent is "write a story", do NOT write the story. Write the PROMPT to ask an AI to write the story).
-    3. If the prompt requires input data (like code to fix, or text to summarize), use clear placeholders like "[INSERT CODE HERE]" or "[PASTE TEXT HERE]".
+    1. WRITE THE PROMPT. Do not explain it.
+    2. STRICTLY USE PLACEHOLDERS for any user data. 
+       - Incorrect: "Please provide the code you want me to fix."
+       - Correct: "Act as a Senior Developer. Analyze the following code for bugs and suggest performance improvements:\n\n[PASTE YOUR CODE HERE]"
+    3. Do NOT execute the task yourself. Do not write the story. Do not fix code. WRITE THE PROMPT.
     4. Use best practices: assign a persona, define the output format, and specify constraints.
-    5. The 'result' field in the JSON must contain ONLY the engineered prompt.
+    5. The 'result' field in the JSON must contain ONLY the engineered prompt text.
     `;
 
     const response = await ai.models.generateContent({
