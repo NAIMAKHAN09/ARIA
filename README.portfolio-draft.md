@@ -1,41 +1,41 @@
 # A.R.I.A. — AI Prompt Refiner
 
-A.R.I.A. (Ambiguity Resolution & Intent Analysis Agent) is an AI-powered application that helps transform rough ideas into structured prompts for large language models.
+A.R.I.A. (Ambiguity Resolution & Intent Analysis Agent) is an AI-assisted prompt-refinement prototype. It helps turn a rough idea into a more specific prompt by showing possible interpretations before generating a final, copy-ready prompt.
 
-Instead of immediately rewriting an ambiguous request, the application proposes possible interpretations so the user can choose the intended direction before generating a refined prompt.
+## What It Does
 
-## Features
-
-- Analyze rough or ambiguous user instructions.
-- Present a recommended interpretation and alternative interpretations.
-- Generate a refined, copy-ready prompt based on the selected intent.
-- Use structured JSON responses for predictable application state.
-- Explore additional AI-assisted media workflows present in the codebase.
+- Analyzes a user's initial idea and returns a recommended interpretation plus alternatives.
+- Lets the user select the interpretation that best matches their intent.
+- Generates a structured prompt based on the original idea and selected interpretation.
+- Uses schema-constrained JSON responses for the interpretation and final-output steps.
+- Includes additional media-related service functions in the codebase; their end-to-end UI workflows should be verified before being described as completed features.
 
 ## Technology Stack
 
-- React
-- TypeScript
+- React 19 and TypeScript
 - Vite
-- Google Gen AI SDK
+- Google Gen AI SDK (`@google/genai`)
 - Lucide React
+- Tailwind utility classes in the interface
 
-## How It Works
+## How the Main Flow Works
 
-1. The user submits an idea or instruction.
-2. The application requests possible interpretations from an AI model.
-3. The user selects the most appropriate interpretation.
-4. A second generation step produces a structured prompt.
-5. The interface displays the resulting prompt.
+1. Enter a rough idea or instruction.
+2. A Gemini model proposes one recommended interpretation and three alternatives.
+3. Select the interpretation that best reflects the intended outcome.
+4. A second generation step creates a refined prompt.
+5. Review the result and use it in the AI tool of your choice.
 
-## Getting Started
+The implementation currently references Gemini models in the service layer. Model availability and API access depend on the Google AI account and configuration in use.
+
+## Run Locally
 
 ### Prerequisites
 
 - Node.js and npm
 - A Google Gemini API key
 
-### Installation
+### Install and start
 
 ```bash
 git clone https://github.com/NAIMAKHAN09/ARIA.git
@@ -43,35 +43,46 @@ cd ARIA
 npm install
 ```
 
-Configure the required API credentials in your local environment, then run:
+Create a local `.env.local` file in the project root with your key:
+
+```dotenv
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+Then start the development server:
 
 ```bash
 npm run dev
 ```
 
-Use `npm run build` to create a production build.
+Vite is configured to serve the app on port 3000. Create a production build with:
 
-> API-key handling must be verified before deployment. Do not expose a private API key in browser-delivered code or commit credentials to Git.
+```bash
+npm run build
+```
 
-## Project Structure
+**Deployment note:** the current Vite configuration injects the Gemini key into client-side code. Treat this as a prototype configuration, do not use a private key in a public deployment, and move model calls behind a server-side endpoint before production use. Never commit real credentials.
 
-- `App.tsx` — primary application state and interaction flow
-- `components/` — reusable interface components
-- `services/` — AI generation and related service logic
-- `types.ts` — TypeScript data types
-- `index.tsx` — application entry point
+## Key Files
+
+- `App.tsx` — main application state and interaction flow
+- `components/` — interface components
+- `services/geminiService.ts` — Gemini model calls and response handling
+- `types.ts` — application response and state types
+- `index.tsx` — React entry point
+- `vite.config.ts` — development server and environment configuration
 
 ## Engineering Focus
 
-This project explores AI-assisted interaction design, structured model outputs, asynchronous application state, and the user experience of resolving ambiguous instructions.
+A.R.I.A. explores human-in-the-loop prompt refinement, structured model responses, asynchronous UI state, and interaction design for resolving ambiguous instructions.
 
-## Future Improvements
+## Potential Next Steps
 
-- Add automated tests for interpretation and generation flows.
-- Improve API error handling and configuration validation.
-- Document supported models and API requirements.
-- Add screenshots and a verified live demonstration.
+- Add tests for interpretation and final prompt generation.
+- Improve error handling for missing credentials, rate limits, and invalid model responses.
+- Document supported model choices and API requirements.
+- Add screenshots and a verified demo link.
 
 ## License
 
-No license has been specified in this README proposal. Confirm the intended license before redistribution.
+No license is specified in this draft. Confirm the intended license before distributing or reusing the project.
